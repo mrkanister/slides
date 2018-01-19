@@ -7,13 +7,6 @@ trivago N.V.
 martin.mai@trivago.com
 https://github.com/mrkanister
 
-: - Joined trivago in October last year
-: - First task: create a tool to automate project craetion for GCP
-: - And by new tool I mean new as in "from-scratch", no legacy code attached,
-:   and I was free to choose the language and tooling to my likings.
-:   I consider myself really lucky, because you don't have that opportunity often
-: - Before, mostly worked with Bash, Python and .NET, so I picked Go (obviously (?))
-
 
 
 * Playground
@@ -61,7 +54,7 @@ This is your workspace for Go source code, packages and binaries:
  │   └── gcp                 # package main: binary "gcp"
  │       ├── create.go
  │       └── main.go
- |
+ │
  ├── gcp                     # package "git.trivago.trv/sop/cauliflower/gcp"
  │   ├── resource.go
  │   ├── resource_test.go
@@ -74,10 +67,10 @@ This is your workspace for Go source code, packages and binaries:
  │
  ├── CHANGELOG.md
  ├── README.md
- |
+ │
  ├── Gopkg.toml              # dependencies (managed with dep)
  ├── Gopkg.lock              # locked revisions of the dependencies
- |
+ │
  ├── Makefile
 
 
@@ -116,6 +109,8 @@ A tour of Go: [[https://tour.golang.org/methods/11][Interface values]]
 
 * It's not a bug, it's a feature
 .play -edit -numbers src/cmd/trailing-comma/main.go
+
+
 
 * Summary
 - When searching for Go related topics online, use the keyword "golang"
