@@ -60,12 +60,12 @@ This is your workspace for Go source code, packages and binaries:
  ├── gcp                     # package "git.trivago.trv/sop/cauliflower/gcp"
  │   ├── resource.go
  │   ├── resource_test.go
- │   ├── service.go
+ │   └── service.go
  │
  ├── vendor                  # vendored dependencies take precedence over $GOPATH/src (!)
  │   ├── cloud.google.com/...
  │   ├── github.com/...
- │   ├── golang.org/...
+ │   └── golang.org/...
  │
  ├── CHANGELOG.md
  ├── README.md
@@ -73,7 +73,7 @@ This is your workspace for Go source code, packages and binaries:
  ├── Gopkg.toml              # dependencies (managed with dep)
  ├── Gopkg.lock              # locked revisions of the dependencies
  │
- ├── Makefile
+ └── Makefile
 
 
 
@@ -82,10 +82,8 @@ This is your workspace for Go source code, packages and binaries:
  .DEFAULT_GOAL := build
  
  SOURCE := git.trivago.trv/sop/cauliflower/cmd/gcp
- TARGET := dist
  
  clean:
- 	rm -rf $(TARGET)
  	rm -rf ./vendor
  
  deps:
@@ -125,8 +123,8 @@ A tour of Go: [[https://tour.golang.org/methods/11][Interface values]]
 More ...
 
 - [[https://golang.org/doc/effective_go.html][Effektive Go]] and [[https://github.com/golang/go/wiki/CodeReviewComments][Go Code Review Comments]]
-- [[https://www.youtube.com/results?search_query=Rob+Pike][Talks]] by Rob Pike
 - [[https://www.youtube.com/channel/UC_BzFbxG2za3bp5NRRRXJSw][JustForFunc]] by Francesc Campoy
+- [[https://www.youtube.com/results?search_query=Rob+Pike][Talks]] by Rob Pike
 
 
 
