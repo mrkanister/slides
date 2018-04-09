@@ -11,6 +11,11 @@ go get golang.org/x/tools/cmd/present
 
 Here, have some quotes:
 
+> "People think that the purpose of memory is to remember the past, and
+> that's not the purpose of memory. The purpose of memory is to extract
+> out from the past lessons to structure the future."  
+> -- Jordan B. Peterson
+
 > "Organizations which design systems ... are constrained to produce
 > designs which are copies of the communication structures of these
 > organizations.”  
