@@ -29,6 +29,10 @@ Here, have some quotes:
 > to have your semantics depend on invisible characters."  
 > -- Rob Pike, GopherCon 2014 Opening Keynote
 
-> There are people who disagree with that, I respect their opinion and I
-> move on."  
+> "There are people who disagree with that, I respect their opinion and
+> I move on."  
 > -- Rob Pike, GopherCon 2014 Opening Keynote
+
+> "The person who says he knows what he thinks but cannot express it
+> usually does not know what he thinks.”  
+> -- Mortimer Adler
