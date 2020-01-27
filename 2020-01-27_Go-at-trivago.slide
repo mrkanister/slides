@@ -1,0 +1,255 @@
+Go at trivago
+27 Jan 2020
+
+Martin Mai
+Site Reliability Engineer
+trivago N.V.
+martin.mai@trivago.com
+https://github.com/mrkanister
+
+
+
+* Slides
+.image img/qrcode.svg 300 _
+.caption [[https://github.com/mrkanister/slides]]
+
+
+
+* 
+.background img/loc.png 550 _
+
+
+
+* Error Handling
+.code -numbers src/cmd/run-function-1/main.go /^func main/,
+
+* Error Handling
+.code -numbers src/cmd/run-function-1/main.go /^func main/, HL1
+Wait, are our deferred functions run when we call `log.Fatal()`?
+
+* Error Handling
+.code src/pkg/log/log.go
+.code src/pkg/os/proc.go
+Not exactly the answer we were looking for ... what would you do?
+
+* Error Handling
+.code -numbers src/cmd/run-function-2/main.go /^func main/,
+
+
+
+* Versioning Injection
+- version flag
+ $ git --version
+ git version 2.25.0
+
+- version command
+ $ go version
+ go version go1.13.6 darwin/amd64
+
+- version command with flag
+ $ kubectl version --short
+ Client Version: v1.14.8
+ Server Version: v1.15.4-gke.22
+
+So many options to display, but which version to use?
+
+* Versioning Injection
+Maybe Git has an answer.
+ 
+ $ git describe --help
+ --always
+     Show uniquely abbreviated commit object as fallback.
+
+ --dirty
+     If the working tree has local modification "-dirty" is appended.
+
+ --tags
+     Use any tag found in refs/tags namespace.
+ 
+Let's combine them:
+
+ $ git describe --always --dirty --tags
+ v0.1.0-91-g8a2d63d
+
+Nice! But how do we inject the version when running our application?
+
+* Versioning Injection
+From `run`
+
+ $ go help run
+ For more about build flags, see 'go help build'.
+
+over `build`
+
+ $ go help build
+ -ldflags '[pattern=]arg list'
+     arguments to pass on each go tool link invocation.
+
+to [[https://golang.org/cmd/link]]
+
+ Flags:
+ -X importpath.name=value
+     Set the value of the string variable in importpath named `name` to `value`.
+
+I think we found it!
+
+* Version Injection
+Let's try it:
+
+.code -numbers src/cmd/version-injection/main.go
+
+ $ go run .
+
+ $ go run -ldflags "-X main.VersionString=v0.1.0" .
+ v0.1.0
+
+ $ go run -ldflags "-X main.VersionString=$(git describe --always --dirty --tags)" .
+ v0.1.0-91-g8a2d63d
+
+Voila!
+
+* Version Injection
+.code -numbers src/cmd/version-injection-server/main.go /^var VersionString/,
+ $ go run -ldflags "-X main.VersionString=$(git describe --always --dirty --tags)" . &
+ [1] 87782
+ 
+ $ curl localhost:8080/version
+ v0.1.0-91-g8a2d63d
+
+
+
+* Project Structure
+ ├── bin/
+ │   └── staticcheck
+ ├── build/
+ │   ├── mdclient
+ │   └── mdserver
+ ├── cmd/
+ │   ├── mdclient/
+ │   └── mdserver/
+ ├── doc/
+ ├── k8s/
+ ├── pkg/
+ │   ├── domain/
+ │   ├── gateway/
+ │   ├── handler/
+ │   └── storage/
+ ├── Dockerfile
+ ├── Makefile
+ ├── README.md
+ ├── RUNBOOK.md
+ ├── go.mod
+ ├── go.sum
+ └── tools.go
+
+* Project Structure
+ ├── cmd/           # main packages
+ │   ├── mdclient/
+ │   └── mdserver/
+ ├── doc/           # documentation
+ ├── pkg/           # libraries
+ │   ├── domain/
+ │   ├── gateway/
+ │   ├── handler/
+ │   └── storage/
+ ├── README.md
+ ├── go.mod         # dependencies
+ └── go.sum
+
+- Basic layout, no magic
+- GopherCon 2018: [[https://www.youtube.com/watch?v=oL6JBUk6tj0][How Do You Structure Your Go Apps]]
+- GopherCon 2019: [[https://www.youtube.com/watch?v=nLskCRJOdxM][How Uber Goes]]
+- Uncle Bob: [[https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html][The Clean Architecture]]
+
+* Project Structure
+ ├── build/         # build artifacts (.gitignore)
+ │   ├── mdclient
+ │   └── mdserver
+ └── Makefile
+.code src/project-structure/building/Makefile
+ $ make build-  <tab><tab>
+ build-%    build-mdclient    build-mdserver
+ $ make build-
+
+* Project Structure
+ ├── bin/           # tool dependencies (.gitignore)
+ │   └── staticcheck
+ ├── Makefile
+ └── tools.go       # versioning
+.code src/project-structure/tools/Makefile
+.code src/project-structure/tools/tools.go
+[[https://github.com/golang/go/issues/32504][cmd/go: accept main packages as dependencies in go.mod files #32504]]
+
+* Project Structure
+ ├── k8s/           # Kubernetes manifests
+ ├── Dockerfile
+ └── RUNBOOK.md
+.code -numbers src/project-structure/k8s/Dockerfile
+- Minimal Docker image size
+- No dependencies
+- Reduced attack surface
+- Happy Site Reliability Engineer :)
+
+
+
+* Unit Tests
+.code -numbers src/pkg/test-1/test.go
+
+* Unit Tests
+ tests := []struct {
+     name string
+     arg  int
+     want int
+ }{
+     {"test 1",
+         123, 456,
+     },
+ }
+
+vs.
+
+ tests := map[string]struct {
+     arg  int
+     want int
+ }{
+     "test 1": {
+         123, 456,
+     },
+ }
+
+* Unit Tests
+ tests := map[string]struct {
+     arg  int
+     want int
+ }{
+     "test 1": {
+         123, 456,
+     },
+ }
+- Test names have to be unique.
+- Test names have a well defined place.
+- Test order is unspecified!
+- Check out [[https://github.com/stretchr/testify]]
+
+
+
+* Go 1.14 Sneak-Peak
+1. Jaana B. Dogan (@rakyll): [[https://rakyll.org/inlined-defers/][Inlined defers in Go]]
+
+ mu.Lock()
+ defer mu.Unlock()
+
+2. [[https://github.com/golang/go/issues/32966][cmd/go: add GOINSECURE for insecure dependencies #32966]]
+
+- Go 1.13: Explicitly fetch insecure dependency
+ # Makefile
+ deps:
+     go get -insecure $(REPO)@$(VERSION)
+ 
+ $ make deps build-mdserver
+
+- Go 1.14: Allow insecure dependency host
+ # Makefile
+ export GOINSECURE = <Git host>
+
+ $ make build-mdserver

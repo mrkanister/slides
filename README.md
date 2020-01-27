@@ -1,10 +1,15 @@
 # slides
 
-This repository holds my (probably mostly Go) talks which can be viewed
-with the [Go presentation tool][1].
+This repository holds my (probably mostly Go) talks. You can view them
+using the [Go presentation tool][1]:
 
 ```bash
-go get golang.org/x/tools/cmd/present
+go install golang.org/x/tools/cmd/present
+```
+
+```bash
+$ present
+2020/01/28 09:46:30 Open your web browser and visit http://127.0.0.1:3999
 ```
 
 [1]: https://godoc.org/golang.org/x/tools/present
