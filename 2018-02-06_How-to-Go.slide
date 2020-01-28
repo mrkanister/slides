@@ -12,7 +12,6 @@ https://github.com/mrkanister
 * Playground
 .link https://golang.org
 .play -edit -numbers src/cmd/golang.org/main.go
-.image img/gopher.png
 
 
 
